@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Target, Plus, BookTemplate, Settings } from 'lucide-react';
+import { LayoutDashboard, Target, Plus, BookTemplate, Settings, Download } from 'lucide-react';
 
 const ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Home' },
   { to: '/goals', icon: Target, label: 'Goals' },
   { to: '/new', icon: Plus, label: 'New' },
   { to: '/templates', icon: BookTemplate, label: 'Templates' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/install', icon: Download, label: 'Install' },
 ];
 
 export default function MobileNav() {

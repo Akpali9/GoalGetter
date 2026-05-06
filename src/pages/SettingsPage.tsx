@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
-import { Moon, Sun, Download, Shield } from 'lucide-react';
+import { Moon, Sun, Download, Shield, Globe } from 'lucide-react';
+import { getUserCurrency, formatCurrency } from '@/lib/currency';
 
 export default function SettingsPage() {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const currency = getUserCurrency();
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
@@ -31,6 +33,17 @@ export default function SettingsPage() {
             >
               <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform ${dark ? 'left-6' : 'left-0.5'}`} />
             </button>
+          </div>
+
+          {/* Currency */}
+          <div className="bg-card border border-border rounded-xl p-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Globe className="w-5 h-5 text-accent" />
+              <div>
+                <p className="text-sm font-medium text-foreground">Currency</p>
+                <p className="text-xs text-muted-foreground">Auto-detected: {currency.symbol} ({currency.code}) — e.g. {formatCurrency(1000)}</p>
+              </div>
+            </div>
           </div>
 
           {/* Export */}
@@ -63,7 +76,7 @@ export default function SettingsPage() {
             <h3 className="text-base font-bold text-accent-foreground mb-1">Upgrade to Pro</h3>
             <p className="text-xs text-accent-foreground/70 mb-4">Unlimited goals, pro metrics, professional booking, and more.</p>
             <button className="px-6 py-2.5 rounded-xl bg-card text-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
-              $9.99/month
+              {formatCurrency(9.99)}/month
             </button>
           </div>
         </div>

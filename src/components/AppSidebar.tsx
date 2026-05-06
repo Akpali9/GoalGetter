@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Target, Plus, BookTemplate, Users, Settings } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -15,10 +16,8 @@ export default function AppSidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-64 border-r border-border bg-card min-h-screen p-4">
-      <div className="flex items-center gap-2 px-3 mb-8">
-        <div className="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center">
-          <span className="text-sm font-bold text-primary-foreground">G</span>
-        </div>
+      <div className="flex items-center gap-2.5 px-3 mb-8">
+        <img src={logoImg} alt="GoalGetter" width={36} height={36} className="rounded-lg" />
         <span className="text-lg font-semibold text-foreground tracking-tight">GoalGetter</span>
       </div>
       <nav className="flex flex-col gap-1 flex-1">
