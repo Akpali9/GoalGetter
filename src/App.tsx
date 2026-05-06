@@ -11,6 +11,8 @@ import CommunityPage from "./pages/CommunityPage";
 import SettingsPage from "./pages/SettingsPage";
 import GoalDetailPage from "./pages/GoalDetailPage";
 import InstallPage from "./pages/InstallPage";
+import DailyHabitsPage from "./pages/DailyHabitsPage";
+import WeeklyActionsPage from "./pages/WeeklyActionsPage";
 import NotFound from "./pages/NotFound";
 import AICoach from "./components/AICoach";
 
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/goals" element={<GoalsPage />} />
           <Route path="/goals/:id" element={<GoalDetailPage />} />
           <Route path="/new" element={<NewGoalPage />} />
+          <Route path="/daily" element={<DailyHabitsPage />} />
+          <Route path="/weekly" element={<WeeklyActionsPage />} />
           <Route path="/templates" element={<TemplatesPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/settings" element={<SettingsPage />} />

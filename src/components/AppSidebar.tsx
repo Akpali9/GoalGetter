@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Target, Plus, BookTemplate, Users, Settings } from 'lucide-react';
+import { LayoutDashboard, Target, Plus, BookTemplate, Users, Settings, Flame, CalendarCheck } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/goals', icon: Target, label: 'Goals' },
+  { to: '/daily', icon: Flame, label: 'Daily Habits' },
+  { to: '/weekly', icon: CalendarCheck, label: 'Weekly Actions' },
+  { to: '/goals', icon: Target, label: 'All Goals' },
   { to: '/new', icon: Plus, label: 'New Goal' },
   { to: '/templates', icon: BookTemplate, label: 'Templates' },
   { to: '/community', icon: Users, label: 'Community' },

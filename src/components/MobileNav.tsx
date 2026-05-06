@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Target, Plus, BookTemplate, Settings, Download } from 'lucide-react';
+import { LayoutDashboard, Flame, CalendarCheck, Plus, Target } from 'lucide-react';
 
 const ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Home' },
-  { to: '/goals', icon: Target, label: 'Goals' },
+  { to: '/daily', icon: Flame, label: 'Daily' },
   { to: '/new', icon: Plus, label: 'New' },
-  { to: '/templates', icon: BookTemplate, label: 'Templates' },
-  { to: '/install', icon: Download, label: 'Install' },
+  { to: '/weekly', icon: CalendarCheck, label: 'Weekly' },
+  { to: '/goals', icon: Target, label: 'Goals' },
 ];
 
 export default function MobileNav() {
@@ -24,7 +24,7 @@ export default function MobileNav() {
                 active ? 'text-accent' : 'text-muted-foreground'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className={`w-5 h-5 ${to === '/new' ? 'p-0.5 rounded-full gradient-accent text-accent-foreground' : ''}`} />
               {label}
             </Link>
           );
