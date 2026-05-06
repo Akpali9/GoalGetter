@@ -10,7 +10,9 @@ import TemplatesPage from "./pages/TemplatesPage";
 import CommunityPage from "./pages/CommunityPage";
 import SettingsPage from "./pages/SettingsPage";
 import GoalDetailPage from "./pages/GoalDetailPage";
+import InstallPage from "./pages/InstallPage";
 import NotFound from "./pages/NotFound";
+import AICoach from "./components/AICoach";
 
 const queryClient = new QueryClient();
 
@@ -28,8 +30,10 @@ const App = () => (
           <Route path="/templates" element={<TemplatesPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/install" element={<InstallPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <AICoach />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

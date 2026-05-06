@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { TEMPLATES, CATEGORY_CONFIG } from '@/lib/types';
 import { addGoal } from '@/lib/goalStore';
+import { formatCurrency } from '@/lib/currency';
 
 export default function TemplatesPage() {
   const navigate = useNavigate();
@@ -21,6 +22,26 @@ export default function TemplatesPage() {
       completed: false,
     });
     navigate('/goals');
+  };
+
+  const formatDescription = (t: typeof TEMPLATES[0]) => {
+    if (t.category === 'financial') {
+      return t.description.replace(/\$[\d,]+/g, match => {
+        const num = parseInt(match.replace(/[$,]/g, ''));
+        return formatCurrency(num);
+      });
+    }
+    return t.description;
+  };
+
+  const formatBreakdown = (t: typeof TEMPLATES[0]) => {
+    if (t.category === 'financial') {
+      return t.breakdown.replace(/\$[\d,]+/g, match => {
+        const num = parseInt(match.replace(/[$,]/g, ''));
+        return formatCurrency(num);
+      });
+    }
+    return t.breakdown;
   };
 
   return (
@@ -44,9 +65,9 @@ export default function TemplatesPage() {
                   <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{cat.label}</span>
                 </div>
                 <h3 className="text-sm font-semibold text-foreground mb-1">{t.title}</h3>
-                <p className="text-xs text-muted-foreground mb-1">{t.description}</p>
+                <p className="text-xs text-muted-foreground mb-1">{formatDescription(t)}</p>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Breakdown: {t.breakdown}
+                  Breakdown: {formatBreakdown(t)}
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground capitalize">{t.trackingType} · {t.yearlyTarget} {t.unit}/year</span>
