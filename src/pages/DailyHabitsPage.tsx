@@ -1,14 +1,123 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import Layout from '@/components/Layout';
 import { getGoalsByLevel, updateGoal, addGoal } from '@/lib/goalStore';
-import { CATEGORY_CONFIG, GoalCategory } from '@/lib/types';
-import { Check, Plus, Flame, TrendingUp, Minus } from 'lucide-react';
+import { CATEGORY_CONFIG, GoalCategory, TrackingType } from '@/lib/types';
+import { Check, Plus, Flame, TrendingUp, Minus, X, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+function QuickAddHabit({ onAdd, onClose }: { onAdd: () => void; onClose: () => void }) {
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState<GoalCategory>('mental');
+  const [trackingType, setTrackingType] = useState<TrackingType>('binary');
+  const [target, setTarget] = useState('');
+  const [unit, setUnit] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = () => {
+    if (!title.trim()) return;
+    addGoal({
+      title: title.trim(),
+      category,
+      trackingType,
+      level: 'daily',
+      target: trackingType === 'binary' ? undefined : Number(target) || undefined,
+      current: 0,
+      unit: trackingType === 'binary' ? undefined : unit || undefined,
+      completed: false,
+    });
+    onAdd();
+    setTitle('');
+    setTarget('');
+    setUnit('');
+    inputRef.current?.focus();
+  };
+
+  const categories: GoalCategory[] = ['mental', 'emotional', 'financial', 'physical', 'professional'];
+
+  return (
+    <div className="bg-card border border-accent/30 rounded-2xl p-4 animate-fade-in">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm font-semibold text-foreground">Quick Add Habit</span>
+        <button onClick={onClose} className="p-1 text-muted-foreground hover:text-foreground">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      <input
+        ref={inputRef}
+        autoFocus
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+        placeholder="e.g. Meditate 10 minutes"
+        className="w-full bg-muted/50 border border-border rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 mb-3"
+      />
+
+      {/* Category chips */}
+      <div className="flex gap-1.5 flex-wrap mb-3">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategory(cat)}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
+              category === cat ? 'gradient-accent text-accent-foreground' : 'bg-secondary text-secondary-foreground'
+            }`}
+          >
+            {CATEGORY_CONFIG[cat].icon} {CATEGORY_CONFIG[cat].label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tracking type */}
+      <div className="flex gap-2 mb-3">
+        {(['binary', 'numeric', 'time'] as TrackingType[]).map(tt => (
+          <button
+            key={tt}
+            onClick={() => setTrackingType(tt)}
+            className={`flex-1 py-1.5 rounded-lg text-[11px] font-medium transition-colors ${
+              trackingType === tt ? 'bg-accent/20 text-accent border border-accent/30' : 'bg-muted text-muted-foreground'
+            }`}
+          >
+            {tt === 'binary' ? '✓ Yes/No' : tt === 'numeric' ? '# Count' : '⏱ Time'}
+          </button>
+        ))}
+      </div>
+
+      {/* Target & unit for non-binary */}
+      {trackingType !== 'binary' && (
+        <div className="flex gap-2 mb-3">
+          <input
+            value={target}
+            onChange={e => setTarget(e.target.value)}
+            placeholder="Target"
+            type="number"
+            className="flex-1 bg-muted/50 border border-border rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+          />
+          <input
+            value={unit}
+            onChange={e => setUnit(e.target.value)}
+            placeholder="Unit (pages, mins...)"
+            className="flex-1 bg-muted/50 border border-border rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+          />
+        </div>
+      )}
+
+      <button
+        onClick={handleSubmit}
+        disabled={!title.trim()}
+        className="w-full py-2.5 rounded-xl gradient-accent text-sm font-semibold text-accent-foreground disabled:opacity-40 active:scale-[0.98] transition-all"
+      >
+        Add Habit
+      </button>
+    </div>
+  );
+}
+
 export default function DailyHabitsPage() {
   const [, setTick] = useState(0);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
   const refresh = useCallback(() => setTick(t => t + 1), []);
 
   const dailyGoals = getGoalsByLevel('daily');
@@ -16,7 +125,6 @@ export default function DailyHabitsPage() {
   const total = dailyGoals.length;
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-  // Simulated 7-day history based on goal order
   const dayOfWeek = new Date().getDay();
   const todayIdx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
@@ -103,20 +211,34 @@ export default function DailyHabitsPage() {
           ))}
         </div>
 
+        {/* Quick Add */}
+        {showQuickAdd ? (
+          <div className="mb-4">
+            <QuickAddHabit onAdd={() => { refresh(); }} onClose={() => setShowQuickAdd(false)} />
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowQuickAdd(true)}
+            className="w-full mb-4 flex items-center justify-center gap-2 py-3 rounded-2xl gradient-accent text-sm font-semibold text-accent-foreground active:scale-[0.98] transition-all animate-fade-in"
+          >
+            <Plus className="w-4 h-4" /> Quick Add Habit
+          </button>
+        )}
+
         {/* Habit list */}
-        {dailyGoals.length === 0 ? (
+        {dailyGoals.length === 0 && !showQuickAdd ? (
           <div className="bg-card border border-border rounded-2xl p-8 text-center animate-fade-in">
             <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
               <Flame className="w-6 h-6 text-muted-foreground" />
             </div>
             <p className="text-sm font-medium text-foreground mb-1">No daily habits yet</p>
             <p className="text-xs text-muted-foreground mb-4">Start small — add 1-3 habits you want to do every day.</p>
-            <Link
-              to="/new"
+            <button
+              onClick={() => setShowQuickAdd(true)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl gradient-accent text-sm font-medium text-accent-foreground"
             >
               <Plus className="w-4 h-4" /> Add Habit
-            </Link>
+            </button>
           </div>
         ) : (
           <div className="space-y-2 animate-slide-up">
@@ -132,7 +254,6 @@ export default function DailyHabitsPage() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    {/* One-tap check */}
                     <button
                       onClick={() => handleTap(goal.id, goal.completed)}
                       className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 ${
@@ -152,7 +273,6 @@ export default function DailyHabitsPage() {
                         </span>
                       </div>
 
-                      {/* Progress bar for numeric/time */}
                       {goal.target && goal.trackingType !== 'binary' && (
                         <div className="flex items-center gap-2 mt-1.5">
                           <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -168,7 +288,6 @@ export default function DailyHabitsPage() {
                       )}
                     </div>
 
-                    {/* Stepper for numeric goals */}
                     {goal.trackingType === 'numeric' && !goal.completed && goal.target && (
                       <div className="flex items-center gap-1 shrink-0">
                         <button
@@ -189,14 +308,6 @@ export default function DailyHabitsPage() {
                 </div>
               );
             })}
-
-            {/* Add more */}
-            <Link
-              to="/new"
-              className="flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed border-border text-muted-foreground hover:border-accent hover:text-accent transition-colors text-sm font-medium"
-            >
-              <Plus className="w-4 h-4" /> Add Habit
-            </Link>
           </div>
         )}
       </div>
