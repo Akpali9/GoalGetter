@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Target, Plus, BookTemplate, Users, Settings, Flame, CalendarCheck } from 'lucide-react';
+import { getGoals } from '@/lib/goalStore';
 import logoImg from '@/assets/logo.png';
 
 const NAV_ITEMS = [
@@ -43,7 +44,7 @@ export default function AppSidebar() {
       </nav>
       <div className="mt-auto px-3 py-3 rounded-lg bg-muted">
         <p className="text-xs text-muted-foreground">Free Plan</p>
-        <p className="text-xs text-muted-foreground mt-1">3 of 5 goals used</p>
+        <p className="text-xs text-muted-foreground mt-1">{getGoals().length} of 5 goals used</p>
         <button className="mt-2 text-xs font-medium text-accent hover:underline">Upgrade to Pro</button>
       </div>
     </aside>
