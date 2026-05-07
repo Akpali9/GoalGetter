@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Target, Plus, BookTemplate, Users, Settings, Flame, CalendarCheck } from 'lucide-react';
+import { getGoals } from '@/lib/goalStore';
 import logoImg from '@/assets/logo.png';
 
 const NAV_ITEMS = [
