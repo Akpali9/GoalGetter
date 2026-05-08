@@ -95,6 +95,7 @@ export type Database = {
           id: string | null
           member_count: number | null
           name: string | null
+          whatsapp_link: string | null
         }
         Relationships: []
       }
