@@ -23,6 +23,7 @@ export type Database = {
           icon: string
           id: string
           name: string
+          whatsapp_link: string | null
         }
         Insert: {
           category: string
@@ -32,6 +33,7 @@ export type Database = {
           icon?: string
           id?: string
           name: string
+          whatsapp_link?: string | null
         }
         Update: {
           category?: string
@@ -41,6 +43,7 @@ export type Database = {
           icon?: string
           id?: string
           name?: string
+          whatsapp_link?: string | null
         }
         Relationships: []
       }

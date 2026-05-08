@@ -1,0 +1,1 @@
+ALTER TABLE public.community_groups ADD COLUMN whatsapp_link TEXT;
