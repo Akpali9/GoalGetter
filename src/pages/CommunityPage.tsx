@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Layout from '@/components/Layout';
-import { Users, MessageCircle, Plus, LogIn, LogOut, Loader2 } from 'lucide-react';
+import { Users, MessageCircle, Plus, LogIn, LogOut, Loader2, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ interface GroupWithCount {
   created_by: string | null;
   created_at: string;
   member_count: number;
+  whatsapp_link: string | null;
 }
 
 const CATEGORY_OPTIONS = [
@@ -39,7 +40,7 @@ export default function CommunityPage() {
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authSubmitting, setAuthSubmitting] = useState(false);
-  const [newGroup, setNewGroup] = useState({ name: '', description: '', category: CATEGORY_OPTIONS[0].value });
+  const [newGroup, setNewGroup] = useState({ name: '', description: '', category: CATEGORY_OPTIONS[0].value, whatsappLink: '' });
   const [joiningId, setJoiningId] = useState<string | null>(null);
 
   const fetchGroups = useCallback(async () => {
@@ -57,6 +58,7 @@ export default function CommunityPage() {
         created_by: g.created_by,
         created_at: g.created_at!,
         member_count: g.member_count ?? 0,
+        whatsapp_link: (g as any).whatsapp_link ?? null,
       })));
     }
     setLoadingGroups(false);
@@ -117,12 +119,13 @@ export default function CommunityPage() {
       description: newGroup.description.trim() || null,
       category: newGroup.category,
       created_by: user.id,
+      whatsapp_link: newGroup.whatsappLink.trim() || null,
     });
     if (error) {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } else {
       setShowCreate(false);
-      setNewGroup({ name: '', description: '', category: CATEGORY_OPTIONS[0].value });
+      setNewGroup({ name: '', description: '', category: CATEGORY_OPTIONS[0].value, whatsappLink: '' });
       toast({ title: 'Group created!' });
     }
   };
@@ -189,8 +192,14 @@ export default function CommunityPage() {
                       <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{group.category}</span>
                     </div>
                     {group.description && <p className="text-xs text-muted-foreground">{group.description}</p>}
-                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                      <Users className="w-3 h-3" /> {group.member_count} members
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
+                      <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {group.member_count} members</span>
+                      {group.whatsapp_link && (
+                        <a href={group.whatsapp_link} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-success hover:underline font-medium">
+                          <ExternalLink className="w-3 h-3" /> WhatsApp
+                        </a>
+                      )}
                     </p>
                   </div>
                   {isMember ? (
@@ -226,6 +235,7 @@ export default function CommunityPage() {
               >
                 {CATEGORY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
+              <Input placeholder="WhatsApp invite link (optional)" value={newGroup.whatsappLink} onChange={e => setNewGroup(g => ({ ...g, whatsappLink: e.target.value }))} />
             </div>
             <DialogFooter>
               <Button onClick={handleCreateGroup} disabled={!newGroup.name.trim()}>Create</Button>
