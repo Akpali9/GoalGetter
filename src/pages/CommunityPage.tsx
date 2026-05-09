@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Layout from '@/components/Layout';
-import { Users, MessageCircle, Plus, LogIn, LogOut, Loader2, ExternalLink } from 'lucide-react';
+import { Users, MessageCircle, Plus, LogIn, LogOut, Loader2, ExternalLink, Copy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
