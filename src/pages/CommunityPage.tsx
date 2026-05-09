@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Layout from '@/components/Layout';
-import { Users, MessageCircle, Plus, LogIn, LogOut, Loader2, ExternalLink } from 'lucide-react';
+import { Users, MessageCircle, Plus, LogIn, LogOut, Loader2, ExternalLink, Copy } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -195,10 +195,26 @@ export default function CommunityPage() {
                     <p className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
                       <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {group.member_count} members</span>
                       {group.whatsapp_link && (
-                        <a href={group.whatsapp_link} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-success hover:underline font-medium">
-                          <ExternalLink className="w-3 h-3" /> WhatsApp
-                        </a>
+                        <>
+                          <a href={group.whatsapp_link} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-success hover:underline font-medium">
+                            <ExternalLink className="w-3 h-3" /> WhatsApp
+                          </a>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText(group.whatsapp_link!);
+                                toast({ title: 'Link copied!', description: 'WhatsApp invite link copied to clipboard.' });
+                              } catch {
+                                toast({ title: 'Copy failed', description: 'Could not copy link.', variant: 'destructive' });
+                              }
+                            }}
+                            className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground hover:underline font-medium"
+                          >
+                            <Copy className="w-3 h-3" /> Copy link
+                          </button>
+                        </>
                       )}
                     </p>
                   </div>
