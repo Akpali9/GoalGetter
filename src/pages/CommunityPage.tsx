@@ -194,7 +194,7 @@ export default function CommunityPage() {
                     {group.description && <p className="text-xs text-muted-foreground">{group.description}</p>}
                     <p className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
                       <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {group.member_count} members</span>
-                      {group.whatsapp_link && (
+                      {group.whatsapp_link ? (
                         <>
                           <a href={group.whatsapp_link} target="_blank" rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-success hover:underline font-medium">
@@ -215,6 +215,13 @@ export default function CommunityPage() {
                             <Copy className="w-3 h-3" /> Copy link
                           </button>
                         </>
+                      ) : (
+                        <span
+                          className="inline-flex items-center gap-1 text-muted-foreground/60 italic cursor-not-allowed"
+                          title="No WhatsApp link set for this group"
+                        >
+                          <ExternalLink className="w-3 h-3" /> WhatsApp · Set up link
+                        </span>
                       )}
                     </p>
                   </div>
