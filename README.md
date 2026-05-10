@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# GoalGetter
 
-TODO: Document your project here
+
