@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 interface Message {
+  id?: string;
   role: 'user' | 'assistant';
   content: string;
   feedback?: 'up' | 'down';
