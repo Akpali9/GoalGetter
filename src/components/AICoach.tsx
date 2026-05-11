@@ -155,6 +155,8 @@ export default function AICoach() {
         rating: rating === 'up' ? 1 : -1,
         user_message: prevUser?.content ?? null,
         assistant_message: msg.content,
+        session_id: sessionIdRef.current,
+        goals_snapshot: msg.goalsSnapshot ?? null,
       });
       if (error) throw error;
       toast({ title: 'Thanks for the feedback!' });
