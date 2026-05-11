@@ -93,6 +93,16 @@ export default function AICoach() {
         throw new Error(err.error || `Error ${resp.status}`);
       }
 
+      const modelName = resp.headers.get('x-ai-model') ?? undefined;
+      const functionVersion = resp.headers.get('x-function-version') ?? undefined;
+      const promptHash = resp.headers.get('x-prompt-hash') ?? undefined;
+      setMessages(prev => {
+        const copy = [...prev];
+        const last = copy[copy.length - 1];
+        copy[copy.length - 1] = { ...last, modelName, functionVersion, promptHash };
+        return copy;
+      });
+
       const reader = resp.body!.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
