@@ -141,6 +141,27 @@ export default function AICoach() {
     }
   };
 
+  const submitFeedback = async (index: number, rating: 'up' | 'down') => {
+    const msg = messages[index];
+    if (!msg || msg.role !== 'assistant' || msg.feedback) return;
+    setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
+    const prevUser = [...messages.slice(0, index)].reverse().find(m => m.role === 'user');
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase.from('ai_coach_feedback').insert({
+        user_id: user?.id ?? null,
+        rating: rating === 'up' ? 1 : -1,
+        user_message: prevUser?.content ?? null,
+        assistant_message: msg.content,
+      });
+      if (error) throw error;
+      toast({ title: 'Thanks for the feedback!' });
+    } catch (e: any) {
+      setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: undefined } : m));
+      toast({ title: "Couldn't save feedback", description: e?.message, variant: 'destructive' });
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendMessage(input);
