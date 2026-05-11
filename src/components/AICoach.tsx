@@ -213,13 +213,35 @@ export default function AICoach() {
                       <Bot className="w-3.5 h-3.5 text-accent-foreground" />
                     </div>
                   )}
-                  <div className={`max-w-[80%] px-3 py-2 rounded-xl text-sm whitespace-pre-line leading-relaxed ${
-                    msg.role === 'user'
-                      ? 'bg-accent text-accent-foreground rounded-br-sm'
-                      : 'bg-muted text-foreground rounded-bl-sm'
-                  }`}>
-                    {msg.content ? renderMarkdown(msg.content) : showCursor ? <span className="text-muted-foreground animate-pulse">Thinking…</span> : null}
-                    {showCursor && msg.content && <span className="inline-block w-1 h-3 ml-0.5 bg-current animate-pulse" />}
+                  <div className="flex flex-col gap-1 max-w-[80%]">
+                    <div className={`px-3 py-2 rounded-xl text-sm whitespace-pre-line leading-relaxed ${
+                      msg.role === 'user'
+                        ? 'bg-accent text-accent-foreground rounded-br-sm'
+                        : 'bg-muted text-foreground rounded-bl-sm'
+                    }`}>
+                      {msg.content ? renderMarkdown(msg.content) : showCursor ? <span className="text-muted-foreground animate-pulse">Thinking…</span> : null}
+                      {showCursor && msg.content && <span className="inline-block w-1 h-3 ml-0.5 bg-current animate-pulse" />}
+                    </div>
+                    {msg.role === 'assistant' && msg.content && !showCursor && i > 0 && (
+                      <div className="flex items-center gap-1 px-1">
+                        <button
+                          onClick={() => submitFeedback(i, 'up')}
+                          disabled={!!msg.feedback}
+                          aria-label="Helpful"
+                          className={`p-1 rounded hover:bg-muted transition-colors ${msg.feedback === 'up' ? 'text-accent' : 'text-muted-foreground'} disabled:cursor-default`}
+                        >
+                          <ThumbsUp className="w-3.5 h-3.5" fill={msg.feedback === 'up' ? 'currentColor' : 'none'} />
+                        </button>
+                        <button
+                          onClick={() => submitFeedback(i, 'down')}
+                          disabled={!!msg.feedback}
+                          aria-label="Not helpful"
+                          className={`p-1 rounded hover:bg-muted transition-colors ${msg.feedback === 'down' ? 'text-destructive' : 'text-muted-foreground'} disabled:cursor-default`}
+                        >
+                          <ThumbsDown className="w-3.5 h-3.5" fill={msg.feedback === 'down' ? 'currentColor' : 'none'} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0 mt-1">
