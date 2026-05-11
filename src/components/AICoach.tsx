@@ -8,6 +8,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   feedback?: 'up' | 'down';
+  goalsSnapshot?: any;
 }
 
 const QUICK_PROMPTS = [
