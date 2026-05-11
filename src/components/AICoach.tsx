@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  feedback?: 'up' | 'down';
 }
 
 const QUICK_PROMPTS = [
