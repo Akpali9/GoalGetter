@@ -175,6 +175,7 @@ export default function AICoach() {
         model_name: msg.modelName ?? null,
         function_version: msg.functionVersion ?? null,
         prompt_hash: msg.promptHash ?? null,
+        ai_reply_id: msg.id ?? null,
       });
       if (error) throw error;
       toast({ title: 'Thanks for the feedback!' });
