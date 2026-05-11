@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Send, Sparkles, Bot, User } from 'lucide-react';
+import { X, Send, Sparkles, Bot, User, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { getGoals } from '@/lib/goalStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
