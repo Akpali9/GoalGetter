@@ -67,7 +67,8 @@ export default function AICoach() {
       title: g.title, category: g.category, level: g.level,
       completed: g.completed, current: g.current, target: g.target, unit: g.unit,
     }));
-    setMessages([...nextMessages, { role: 'assistant', content: '', goalsSnapshot: goals }]);
+    const replyId = crypto.randomUUID();
+    setMessages([...nextMessages, { id: replyId, role: 'assistant', content: '', goalsSnapshot: goals }]);
     setInput('');
     setIsStreaming(true);
 
