@@ -59,7 +59,11 @@ export default function AICoach() {
     if (!text.trim() || isStreaming) return;
     const userMsg: Message = { role: 'user', content: text.trim() };
     const nextMessages = [...messages, userMsg];
-    setMessages([...nextMessages, { role: 'assistant', content: '' }]);
+    const goals = getGoals().map(g => ({
+      title: g.title, category: g.category, level: g.level,
+      completed: g.completed, current: g.current, target: g.target, unit: g.unit,
+    }));
+    setMessages([...nextMessages, { role: 'assistant', content: '', goalsSnapshot: goals }]);
     setInput('');
     setIsStreaming(true);
 
@@ -69,10 +73,6 @@ export default function AICoach() {
     try {
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
       const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      const goals = getGoals().map(g => ({
-        title: g.title, category: g.category, level: g.level,
-        completed: g.completed, current: g.current, target: g.target, unit: g.unit,
-      }));
 
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/ai-coach`, {
         method: 'POST',
