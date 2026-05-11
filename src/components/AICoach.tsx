@@ -9,6 +9,9 @@ interface Message {
   content: string;
   feedback?: 'up' | 'down';
   goalsSnapshot?: any;
+  modelName?: string;
+  functionVersion?: string;
+  promptHash?: string;
 }
 
 const QUICK_PROMPTS = [
