@@ -8,6 +8,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   feedback?: 'up' | 'down';
+  goalsSnapshot?: any;
 }
 
 const QUICK_PROMPTS = [
@@ -44,6 +45,7 @@ export default function AICoach() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const sessionIdRef = useRef<string>(crypto.randomUUID());
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,7 +59,11 @@ export default function AICoach() {
     if (!text.trim() || isStreaming) return;
     const userMsg: Message = { role: 'user', content: text.trim() };
     const nextMessages = [...messages, userMsg];
-    setMessages([...nextMessages, { role: 'assistant', content: '' }]);
+    const goals = getGoals().map(g => ({
+      title: g.title, category: g.category, level: g.level,
+      completed: g.completed, current: g.current, target: g.target, unit: g.unit,
+    }));
+    setMessages([...nextMessages, { role: 'assistant', content: '', goalsSnapshot: goals }]);
     setInput('');
     setIsStreaming(true);
 
@@ -67,10 +73,6 @@ export default function AICoach() {
     try {
       const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
       const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      const goals = getGoals().map(g => ({
-        title: g.title, category: g.category, level: g.level,
-        completed: g.completed, current: g.current, target: g.target, unit: g.unit,
-      }));
 
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/ai-coach`, {
         method: 'POST',
@@ -111,7 +113,7 @@ export default function AICoach() {
               assistantText += delta;
               setMessages(prev => {
                 const copy = [...prev];
-                copy[copy.length - 1] = { role: 'assistant', content: assistantText };
+                copy[copy.length - 1] = { ...copy[copy.length - 1], role: 'assistant', content: assistantText };
                 return copy;
               });
             }
@@ -122,7 +124,7 @@ export default function AICoach() {
       if (!assistantText) {
         setMessages(prev => {
           const copy = [...prev];
-          copy[copy.length - 1] = { role: 'assistant', content: "I didn't catch that — can you rephrase?" };
+          copy[copy.length - 1] = { ...copy[copy.length - 1], role: 'assistant', content: "I didn't catch that — can you rephrase?" };
           return copy;
         });
       }
@@ -131,7 +133,7 @@ export default function AICoach() {
       const msg = e?.message || 'Something went wrong.';
       setMessages(prev => {
         const copy = [...prev];
-        copy[copy.length - 1] = { role: 'assistant', content: `⚠️ ${msg}` };
+        copy[copy.length - 1] = { ...copy[copy.length - 1], role: 'assistant', content: `⚠️ ${msg}` };
         return copy;
       });
       toast({ title: 'AI Coach error', description: msg, variant: 'destructive' });
@@ -153,6 +155,8 @@ export default function AICoach() {
         rating: rating === 'up' ? 1 : -1,
         user_message: prevUser?.content ?? null,
         assistant_message: msg.content,
+        session_id: sessionIdRef.current,
+        goals_snapshot: msg.goalsSnapshot ?? null,
       });
       if (error) throw error;
       toast({ title: 'Thanks for the feedback!' });
