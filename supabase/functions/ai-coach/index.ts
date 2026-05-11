@@ -1,7 +1,11 @@
 // AI Coach edge function — streams responses via Lovable AI Gateway
+const FUNCTION_VERSION = "2026-05-11.1";
+const MODEL_NAME = "google/gemini-2.5-flash";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Expose-Headers": "x-ai-model, x-function-version, x-prompt-hash",
 };
 
 interface Goal {
@@ -17,6 +21,11 @@ interface Goal {
 interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
+}
+
+async function sha256Hex(input: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
 }
 
 Deno.serve(async (req) => {
@@ -55,6 +64,10 @@ Format: markdown. Keep responses under ~180 words unless the user asks for a dee
 User's current goals:
 ${goalSummary}`;
 
+    // Hash only the static system template (without dynamic goals) so prompts are comparable across users
+    const systemTemplate = systemPrompt.split("User's current goals:")[0];
+    const promptHash = await sha256Hex(systemTemplate);
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -62,7 +75,7 @@ ${goalSummary}`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: MODEL_NAME,
         stream: true,
         messages: [{ role: "system", content: systemPrompt }, ...messages],
       }),
@@ -86,7 +99,13 @@ ${goalSummary}`;
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "text/event-stream",
+        "x-ai-model": MODEL_NAME,
+        "x-function-version": FUNCTION_VERSION,
+        "x-prompt-hash": promptHash,
+      },
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), {

@@ -18,8 +18,11 @@ export type Database = {
         Row: {
           assistant_message: string
           created_at: string
+          function_version: string | null
           goals_snapshot: Json | null
           id: string
+          model_name: string | null
+          prompt_hash: string | null
           rating: number
           session_id: string | null
           user_id: string | null
@@ -28,8 +31,11 @@ export type Database = {
         Insert: {
           assistant_message: string
           created_at?: string
+          function_version?: string | null
           goals_snapshot?: Json | null
           id?: string
+          model_name?: string | null
+          prompt_hash?: string | null
           rating: number
           session_id?: string | null
           user_id?: string | null
@@ -38,8 +44,11 @@ export type Database = {
         Update: {
           assistant_message?: string
           created_at?: string
+          function_version?: string | null
           goals_snapshot?: Json | null
           id?: string
+          model_name?: string | null
+          prompt_hash?: string | null
           rating?: number
           session_id?: string | null
           user_id?: string | null
