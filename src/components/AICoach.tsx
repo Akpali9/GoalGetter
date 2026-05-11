@@ -113,7 +113,7 @@ export default function AICoach() {
               assistantText += delta;
               setMessages(prev => {
                 const copy = [...prev];
-                copy[copy.length - 1] = { role: 'assistant', content: assistantText };
+                copy[copy.length - 1] = { ...copy[copy.length - 1], role: 'assistant', content: assistantText };
                 return copy;
               });
             }
@@ -124,7 +124,7 @@ export default function AICoach() {
       if (!assistantText) {
         setMessages(prev => {
           const copy = [...prev];
-          copy[copy.length - 1] = { role: 'assistant', content: "I didn't catch that — can you rephrase?" };
+          copy[copy.length - 1] = { ...copy[copy.length - 1], role: 'assistant', content: "I didn't catch that — can you rephrase?" };
           return copy;
         });
       }
@@ -133,7 +133,7 @@ export default function AICoach() {
       const msg = e?.message || 'Something went wrong.';
       setMessages(prev => {
         const copy = [...prev];
-        copy[copy.length - 1] = { role: 'assistant', content: `⚠️ ${msg}` };
+        copy[copy.length - 1] = { ...copy[copy.length - 1], role: 'assistant', content: `⚠️ ${msg}` };
         return copy;
       });
       toast({ title: 'AI Coach error', description: msg, variant: 'destructive' });
