@@ -170,6 +170,9 @@ export default function AICoach() {
         assistant_message: msg.content,
         session_id: sessionIdRef.current,
         goals_snapshot: msg.goalsSnapshot ?? null,
+        model_name: msg.modelName ?? null,
+        function_version: msg.functionVersion ?? null,
+        prompt_hash: msg.promptHash ?? null,
       });
       if (error) throw error;
       toast({ title: 'Thanks for the feedback!' });
