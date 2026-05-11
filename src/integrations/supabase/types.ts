@@ -18,24 +18,30 @@ export type Database = {
         Row: {
           assistant_message: string
           created_at: string
+          goals_snapshot: Json | null
           id: string
           rating: number
+          session_id: string | null
           user_id: string | null
           user_message: string | null
         }
         Insert: {
           assistant_message: string
           created_at?: string
+          goals_snapshot?: Json | null
           id?: string
           rating: number
+          session_id?: string | null
           user_id?: string | null
           user_message?: string | null
         }
         Update: {
           assistant_message?: string
           created_at?: string
+          goals_snapshot?: Json | null
           id?: string
           rating?: number
+          session_id?: string | null
           user_id?: string | null
           user_message?: string | null
         }
