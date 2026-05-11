@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       ai_coach_feedback: {
         Row: {
+          ai_reply_id: string | null
           assistant_message: string
           created_at: string
           function_version: string | null
@@ -29,6 +30,7 @@ export type Database = {
           user_message: string | null
         }
         Insert: {
+          ai_reply_id?: string | null
           assistant_message: string
           created_at?: string
           function_version?: string | null
@@ -42,6 +44,7 @@ export type Database = {
           user_message?: string | null
         }
         Update: {
+          ai_reply_id?: string | null
           assistant_message?: string
           created_at?: string
           function_version?: string | null

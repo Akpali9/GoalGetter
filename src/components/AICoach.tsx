@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 interface Message {
+  id?: string;
   role: 'user' | 'assistant';
   content: string;
   feedback?: 'up' | 'down';
@@ -66,7 +67,8 @@ export default function AICoach() {
       title: g.title, category: g.category, level: g.level,
       completed: g.completed, current: g.current, target: g.target, unit: g.unit,
     }));
-    setMessages([...nextMessages, { role: 'assistant', content: '', goalsSnapshot: goals }]);
+    const replyId = crypto.randomUUID();
+    setMessages([...nextMessages, { id: replyId, role: 'assistant', content: '', goalsSnapshot: goals }]);
     setInput('');
     setIsStreaming(true);
 
@@ -173,6 +175,7 @@ export default function AICoach() {
         model_name: msg.modelName ?? null,
         function_version: msg.functionVersion ?? null,
         prompt_hash: msg.promptHash ?? null,
+        ai_reply_id: msg.id ?? null,
       });
       if (error) throw error;
       toast({ title: 'Thanks for the feedback!' });
