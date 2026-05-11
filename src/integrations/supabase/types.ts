@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_coach_feedback: {
+        Row: {
+          assistant_message: string
+          created_at: string
+          id: string
+          rating: number
+          user_id: string | null
+          user_message: string | null
+        }
+        Insert: {
+          assistant_message: string
+          created_at?: string
+          id?: string
+          rating: number
+          user_id?: string | null
+          user_message?: string | null
+        }
+        Update: {
+          assistant_message?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          user_id?: string | null
+          user_message?: string | null
+        }
+        Relationships: []
+      }
       community_groups: {
         Row: {
           category: string
