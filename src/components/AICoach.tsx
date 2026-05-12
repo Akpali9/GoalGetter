@@ -162,8 +162,8 @@ export default function AICoach() {
   const submitFeedback = async (index: number, rating: 'up' | 'down') => {
     const msg = messages[index];
     if (!msg || msg.role !== 'assistant' || msg.feedback) return;
+    if (pendingFeedback[index]) return; // already in flight
 
-    // Validate ai_reply_id: must exist and be unique among assistant messages in this session
     const replyId = msg.id;
     if (!replyId) {
       toast({ title: "Can't save feedback", description: 'Missing reply ID for this message.', variant: 'destructive' });
@@ -175,7 +175,7 @@ export default function AICoach() {
       return;
     }
 
-    setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
+    setPendingFeedback(prev => ({ ...prev, [index]: rating }));
     const prevUser = [...messages.slice(0, index)].reverse().find(m => m.role === 'user');
     try {
       const { data, error } = await supabase.functions.invoke('ai-coach-feedback', {
@@ -192,14 +192,20 @@ export default function AICoach() {
         },
       });
       if (error) throw error;
+      setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
       if (data?.idempotent) {
         toast({ title: 'Feedback already recorded for this reply.' });
       } else {
         toast({ title: 'Thanks for the feedback!' });
       }
     } catch (e: any) {
-      setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: undefined } : m));
       toast({ title: "Couldn't save feedback", description: e?.message, variant: 'destructive' });
+    } finally {
+      setPendingFeedback(prev => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
     }
   };
 
