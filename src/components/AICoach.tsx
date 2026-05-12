@@ -177,48 +177,26 @@ export default function AICoach() {
     setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
     const prevUser = [...messages.slice(0, index)].reverse().find(m => m.role === 'user');
     try {
-      const { data: existing, error: checkError } = await supabase
-        .from('ai_coach_feedback')
-        .select('id')
-        .eq('ai_reply_id', replyId)
-        .maybeSingle();
-      if (checkError) throw checkError;
-      if (existing) {
-        setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
-        toast({ title: 'Feedback already recorded for this reply.' });
-        return;
-      }
-
-      const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase.from('ai_coach_feedback').insert({
-        user_id: user?.id ?? null,
-        rating: rating === 'up' ? 1 : -1,
-        user_message: prevUser?.content ?? null,
-        assistant_message: msg.content,
-        session_id: sessionIdRef.current,
-        goals_snapshot: msg.goalsSnapshot ?? null,
-        model_name: msg.modelName ?? null,
-        function_version: msg.functionVersion ?? null,
-        prompt_hash: msg.promptHash ?? null,
-        ai_reply_id: msg.id ?? null,
+      const { data, error } = await supabase.functions.invoke('ai-coach-feedback', {
+        body: {
+          ai_reply_id: replyId,
+          rating: rating === 'up' ? 1 : -1,
+          user_message: prevUser?.content ?? null,
+          assistant_message: msg.content,
+          session_id: sessionIdRef.current,
+          goals_snapshot: msg.goalsSnapshot ?? null,
+          model_name: msg.modelName ?? null,
+          function_version: msg.functionVersion ?? null,
+          prompt_hash: msg.promptHash ?? null,
+        },
       });
-      if (error) {
-        if ((error as any).code === '23505' || /duplicate key|unique constraint/i.test(error.message)) {
-          setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
-          toast({ title: 'Feedback already recorded for this reply.' });
-          return;
-        }
-        throw error;
-      }
-      toast({ title: 'Thanks for the feedback!' });
-    } catch (e: any) {
-      const code = e?.code;
-      const isDup = code === '23505' || /duplicate key|unique constraint/i.test(e?.message ?? '');
-      if (isDup) {
-        setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
+      if (error) throw error;
+      if (data?.idempotent) {
         toast({ title: 'Feedback already recorded for this reply.' });
-        return;
+      } else {
+        toast({ title: 'Thanks for the feedback!' });
       }
+    } catch (e: any) {
       setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: undefined } : m));
       toast({ title: "Couldn't save feedback", description: e?.message, variant: 'destructive' });
     }
