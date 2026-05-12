@@ -1,37 +1,120 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Basic Setup -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <!-- Title -->
     <title>GoalGetter</title>
-    <meta name="description" content="Achieve holistic goals across mental, emotional, financial, physical, and professional areas with GoalGetter.">
+
+    <!-- SEO -->
+    <meta
+      name="description"
+      content="Achieve holistic goals across mental, emotional, financial, physical, and professional areas with GoalGetter."
+    />
+    <meta name="author" content="Akpali Francis" />
+
+    <!-- Theme -->
     <meta name="theme-color" content="#d97706" />
+
+    <!-- PWA / Apple -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="GoalGetter" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Icons -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="/apple-touch-icon.png"
+    />
+
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/apple-touch-icon.png"
+    />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Theme Persistence -->
     <script>
-      try { if (localStorage.getItem('goalgetter_theme') === 'dark') document.documentElement.classList.add('dark'); } catch(e) {}
+      try {
+        if (localStorage.getItem("goalgetter_theme") === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {}
     </script>
-    <meta name="author" content="Lovable" />
-    
-    
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/13554a84-43a2-4b9e-8137-4bcff4dcfc52">
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/13554a84-43a2-4b9e-8137-4bcff4dcfc52">
-    <meta property="og:title" content="GoalGetter">
-  <meta name="twitter:title" content="GoalGetter">
-  <meta property="og:description" content="Achieve holistic goals across mental, emotional, financial, physical, and professional areas with GoalGetter.">
-  <meta name="twitter:description" content="Achieve holistic goals across mental, emotional, financial, physical, and professional areas with GoalGetter.">
-</head>
+
+    <meta
+      property="og:title"
+      content="GoalGetter"
+    />
+
+    <meta
+      property="og:description"
+      content="Achieve holistic goals across mental, emotional, financial, physical, and professional areas with GoalGetter."
+    />
+
+    <meta
+      property="og:image"
+      content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/13554a84-43a2-4b9e-8137-4bcff4dcfc52"
+    />
+
+    <!-- Twitter -->
+    <meta
+      name="twitter:card"
+      content="summary_large_image"
+    />
+
+    <meta
+      name="twitter:site"
+      content="@GoalGetter"
+    />
+
+    <meta
+      name="twitter:title"
+      content="GoalGetter"
+    />
+
+    <meta
+      name="twitter:description"
+      content="Achieve holistic goals across mental, emotional, financial, physical, and professional areas with GoalGetter."
+    />
+
+    <meta
+      name="twitter:image"
+      content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/13554a84-43a2-4b9e-8137-4bcff4dcfc52"
+    />
+  </head>
 
   <body>
+    <!-- React Root -->
     <div id="root"></div>
+
+    <!-- Main Entry -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
