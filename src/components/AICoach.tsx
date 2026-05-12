@@ -161,9 +161,34 @@ export default function AICoach() {
   const submitFeedback = async (index: number, rating: 'up' | 'down') => {
     const msg = messages[index];
     if (!msg || msg.role !== 'assistant' || msg.feedback) return;
+
+    // Validate ai_reply_id: must exist and be unique among assistant messages in this session
+    const replyId = msg.id;
+    if (!replyId) {
+      toast({ title: "Can't save feedback", description: 'Missing reply ID for this message.', variant: 'destructive' });
+      return;
+    }
+    const duplicateInSession = messages.some((m, i) => i !== index && m.role === 'assistant' && m.id === replyId);
+    if (duplicateInSession) {
+      toast({ title: "Can't save feedback", description: 'Duplicate reply ID detected.', variant: 'destructive' });
+      return;
+    }
+
     setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
     const prevUser = [...messages.slice(0, index)].reverse().find(m => m.role === 'user');
     try {
+      const { data: existing, error: checkError } = await supabase
+        .from('ai_coach_feedback')
+        .select('id')
+        .eq('ai_reply_id', replyId)
+        .maybeSingle();
+      if (checkError) throw checkError;
+      if (existing) {
+        setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
+        toast({ title: 'Feedback already recorded for this reply.' });
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase.from('ai_coach_feedback').insert({
         user_id: user?.id ?? null,
