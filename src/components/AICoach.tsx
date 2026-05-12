@@ -202,9 +202,23 @@ export default function AICoach() {
         prompt_hash: msg.promptHash ?? null,
         ai_reply_id: msg.id ?? null,
       });
-      if (error) throw error;
+      if (error) {
+        if ((error as any).code === '23505' || /duplicate key|unique constraint/i.test(error.message)) {
+          setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
+          toast({ title: 'Feedback already recorded for this reply.' });
+          return;
+        }
+        throw error;
+      }
       toast({ title: 'Thanks for the feedback!' });
     } catch (e: any) {
+      const code = e?.code;
+      const isDup = code === '23505' || /duplicate key|unique constraint/i.test(e?.message ?? '');
+      if (isDup) {
+        setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
+        toast({ title: 'Feedback already recorded for this reply.' });
+        return;
+      }
       setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: undefined } : m));
       toast({ title: "Couldn't save feedback", description: e?.message, variant: 'destructive' });
     }
