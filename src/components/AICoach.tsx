@@ -50,6 +50,7 @@ export default function AICoach() {
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const sessionIdRef = useRef<string>(crypto.randomUUID());
+  const [pendingFeedback, setPendingFeedback] = useState<Record<number, 'up' | 'down'>>({});
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
