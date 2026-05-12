@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS ai_coach_feedback_ai_reply_id_unique ON public.ai_coach_feedback (ai_reply_id) WHERE ai_reply_id IS NOT NULL;
