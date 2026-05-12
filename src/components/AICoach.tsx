@@ -50,6 +50,7 @@ export default function AICoach() {
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const sessionIdRef = useRef<string>(crypto.randomUUID());
+  const [pendingFeedback, setPendingFeedback] = useState<Record<number, 'up' | 'down'>>({});
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -161,8 +162,8 @@ export default function AICoach() {
   const submitFeedback = async (index: number, rating: 'up' | 'down') => {
     const msg = messages[index];
     if (!msg || msg.role !== 'assistant' || msg.feedback) return;
+    if (pendingFeedback[index]) return; // already in flight
 
-    // Validate ai_reply_id: must exist and be unique among assistant messages in this session
     const replyId = msg.id;
     if (!replyId) {
       toast({ title: "Can't save feedback", description: 'Missing reply ID for this message.', variant: 'destructive' });
@@ -174,7 +175,7 @@ export default function AICoach() {
       return;
     }
 
-    setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
+    setPendingFeedback(prev => ({ ...prev, [index]: rating }));
     const prevUser = [...messages.slice(0, index)].reverse().find(m => m.role === 'user');
     try {
       const { data, error } = await supabase.functions.invoke('ai-coach-feedback', {
@@ -191,14 +192,20 @@ export default function AICoach() {
         },
       });
       if (error) throw error;
+      setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
       if (data?.idempotent) {
         toast({ title: 'Feedback already recorded for this reply.' });
       } else {
         toast({ title: 'Thanks for the feedback!' });
       }
     } catch (e: any) {
-      setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: undefined } : m));
       toast({ title: "Couldn't save feedback", description: e?.message, variant: 'destructive' });
+    } finally {
+      setPendingFeedback(prev => {
+        const next = { ...prev };
+        delete next[index];
+        return next;
+      });
     }
   };
 
@@ -262,26 +269,34 @@ export default function AICoach() {
                       {msg.content ? renderMarkdown(msg.content) : showCursor ? <span className="text-muted-foreground animate-pulse">Thinking…</span> : null}
                       {showCursor && msg.content && <span className="inline-block w-1 h-3 ml-0.5 bg-current animate-pulse" />}
                     </div>
-                    {msg.role === 'assistant' && msg.content && !showCursor && i > 0 && (
-                      <div className="flex items-center gap-1 px-1">
-                        <button
-                          onClick={() => submitFeedback(i, 'up')}
-                          disabled={!!msg.feedback}
-                          aria-label="Helpful"
-                          className={`p-1 rounded hover:bg-muted transition-colors ${msg.feedback === 'up' ? 'text-accent' : 'text-muted-foreground'} disabled:cursor-default`}
-                        >
-                          <ThumbsUp className="w-3.5 h-3.5" fill={msg.feedback === 'up' ? 'currentColor' : 'none'} />
-                        </button>
-                        <button
-                          onClick={() => submitFeedback(i, 'down')}
-                          disabled={!!msg.feedback}
-                          aria-label="Not helpful"
-                          className={`p-1 rounded hover:bg-muted transition-colors ${msg.feedback === 'down' ? 'text-destructive' : 'text-muted-foreground'} disabled:cursor-default`}
-                        >
-                          <ThumbsDown className="w-3.5 h-3.5" fill={msg.feedback === 'down' ? 'currentColor' : 'none'} />
-                        </button>
-                      </div>
-                    )}
+                    {msg.role === 'assistant' && msg.content && !showCursor && i > 0 && (() => {
+                      const pending = pendingFeedback[i];
+                      const locked = !!msg.feedback || !!pending;
+                      const upActive = msg.feedback === 'up' || pending === 'up';
+                      const downActive = msg.feedback === 'down' || pending === 'down';
+                      return (
+                        <div className="flex items-center gap-1 px-1">
+                          <button
+                            onClick={() => submitFeedback(i, 'up')}
+                            disabled={locked}
+                            aria-label="Helpful"
+                            aria-busy={pending === 'up'}
+                            className={`p-1 rounded hover:bg-muted transition-colors ${upActive ? 'text-accent' : 'text-muted-foreground'} disabled:cursor-default ${pending === 'up' ? 'animate-pulse' : ''}`}
+                          >
+                            <ThumbsUp className="w-3.5 h-3.5" fill={upActive ? 'currentColor' : 'none'} />
+                          </button>
+                          <button
+                            onClick={() => submitFeedback(i, 'down')}
+                            disabled={locked}
+                            aria-label="Not helpful"
+                            aria-busy={pending === 'down'}
+                            className={`p-1 rounded hover:bg-muted transition-colors ${downActive ? 'text-destructive' : 'text-muted-foreground'} disabled:cursor-default ${pending === 'down' ? 'animate-pulse' : ''}`}
+                          >
+                            <ThumbsDown className="w-3.5 h-3.5" fill={downActive ? 'currentColor' : 'none'} />
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0 mt-1">
