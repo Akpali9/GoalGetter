@@ -16,11 +16,14 @@ import { Plus, ArrowRight } from 'lucide-react';
 export default function Dashboard() {
   const [, setTick] = useState(0);
 
-  const refresh = useCallback(() => setTick((t) => t + 1), []);
+  const refresh = useCallback(() => {
+    setTick((t) => t + 1);
+  }, []);
 
   const allGoals = getGoals();
   const weeklyGoals = getGoalsByLevel('weekly');
   const quarterlyGoals = getGoalsByLevel('quarterly');
+
   const completionRate = getCompletionRate('weekly');
   const totalStreak = getStreak();
 
@@ -32,23 +35,28 @@ export default function Dashboard() {
     'professional',
   ];
 
-  // Time-based greeting
+  // Time-Based Greeting
   const currentHour = new Date().getHours();
 
-  const greeting =
-    currentHour < 12
-      ? 'Good morning'
-      : currentHour < 18
-      ? 'Good afternoon'
-      : 'Good evening';
+  let greeting = 'Good evening';
+
+  if (currentHour < 12) {
+    greeting = 'Good morning';
+  } else if (currentHour < 18) {
+    greeting = 'Good afternoon';
+  }
 
   return (
     <Layout>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <div className="mb-8 animate-fade-in">
-          <h1 className="text-2xl font-bold text-foreground">
-            {greeting} 👋
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            {greeting}
+
+            <span className="animate-wave inline-block">
+              👋
+            </span>
           </h1>
 
           <p className="text-muted-foreground mt-1">
@@ -114,7 +122,9 @@ export default function Dashboard() {
               to="/goals"
               className="text-xs text-accent hover:underline flex items-center gap-1"
             >
-              View all <ArrowRight className="w-3 h-3" />
+              View all
+
+              <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -129,6 +139,7 @@ export default function Dashboard() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg gradient-accent text-sm font-medium text-accent-foreground"
               >
                 <Plus className="w-4 h-4" />
+
                 Add your first goal
               </Link>
             </div>
@@ -163,9 +174,11 @@ export default function Dashboard() {
                 <Link
                   key={cat}
                   to={`/goals?category=${cat}`}
-                  className="bg-card border border-border rounded-xl p-4 hover:shadow-elevated transition-all"
+                  className="bg-card border border-border rounded-xl p-4 hover:shadow-elevated hover:-translate-y-1 transition-all duration-300"
                 >
-                  <span className="text-xl">{config.icon}</span>
+                  <span className="text-2xl">
+                    {config.icon}
+                  </span>
 
                   <p className="text-sm font-medium text-foreground mt-2">
                     {config.label}
