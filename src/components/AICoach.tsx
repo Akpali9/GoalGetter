@@ -292,10 +292,11 @@ export default function AICoach() {
                             aria-busy={pending === 'down'}
                             className={`p-1 rounded hover:bg-muted transition-colors ${downActive ? 'text-destructive' : 'text-muted-foreground'} disabled:cursor-default ${pending === 'down' ? 'animate-pulse' : ''}`}
                           >
-                          <ThumbsDown className="w-3.5 h-3.5" fill={msg.feedback === 'down' ? 'currentColor' : 'none'} />
-                        </button>
-                      </div>
-                    )}
+                            <ThumbsDown className="w-3.5 h-3.5" fill={downActive ? 'currentColor' : 'none'} />
+                          </button>
+                        </div>
+                      );
+                    })()}
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0 mt-1">
