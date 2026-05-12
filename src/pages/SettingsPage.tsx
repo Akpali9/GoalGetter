@@ -12,6 +12,7 @@ import {
 import { getUserCurrency } from '@/lib/currency';
 import { stripePromise } from '@/lib/stripe';
 
+
 export default function SettingsPage() {
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains('dark')
