@@ -210,6 +210,7 @@ export default function AICoach() {
     } catch (e: any) {
       toast({ title: "Couldn't save feedback", description: e?.message, variant: 'destructive' });
     } finally {
+      if (timer) clearTimeout(timer);
       setPendingFeedback(prev => {
         const next = { ...prev };
         delete next[index];
