@@ -177,8 +177,10 @@ export default function AICoach() {
 
     setPendingFeedback(prev => ({ ...prev, [index]: rating }));
     const prevUser = [...messages.slice(0, index)].reverse().find(m => m.role === 'user');
+    const FEEDBACK_TIMEOUT_MS = 10_000;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      const { data, error } = await supabase.functions.invoke('ai-coach-feedback', {
+      const invokePromise = supabase.functions.invoke('ai-coach-feedback', {
         body: {
           ai_reply_id: replyId,
           rating: rating === 'up' ? 1 : -1,
@@ -191,6 +193,13 @@ export default function AICoach() {
           prompt_hash: msg.promptHash ?? null,
         },
       });
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`Request timed out after ${FEEDBACK_TIMEOUT_MS / 1000}s. Please try again.`)),
+          FEEDBACK_TIMEOUT_MS,
+        );
+      });
+      const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as Awaited<typeof invokePromise>;
       if (error) throw error;
       setMessages(prev => prev.map((m, i) => i === index ? { ...m, feedback: rating } : m));
       if (data?.idempotent) {
