@@ -38,12 +38,12 @@ export default function Dashboard() {
   // Time-Based Greeting
   const currentHour = new Date().getHours();
 
-  let greeting = 'Good evening';
+  let greeting = 'Good Evening';
 
   if (currentHour < 12) {
-    greeting = 'Good morning';
+    greeting = 'Good Morning';
   } else if (currentHour < 18) {
-    greeting = 'Good afternoon';
+    greeting = 'Good Afternoon';
   }
 
   return (
